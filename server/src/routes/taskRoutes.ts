@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Router } from 'express';
 import {
   getTasks,
   getTaskById,
@@ -9,9 +9,9 @@ import {
   seedTasks,
 } from '../controllers/taskController.js';
 
-const router = express.Router();
+const router: Router = express.Router();
 
-// Stats and Seeder routes (must come before /:id)
+// Stats and Seeder routes
 router.get('/stats', getTaskStats);
 router.post('/seed', seedTasks);
 

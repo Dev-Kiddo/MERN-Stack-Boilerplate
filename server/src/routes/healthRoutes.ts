@@ -1,13 +1,13 @@
-import express from 'express';
+import express, { Router, Request, Response } from 'express';
 import { getDBStatus } from '../config/db.js';
 
-const router = express.Router();
+const router: Router = express.Router();
 
 /**
  * @desc    Check server and database status
  * @route   GET /api/health
  */
-router.get('/', (req, res) => {
+router.get('/', (_req: Request, res: Response) => {
   const db = getDBStatus();
   const uptimeSeconds = Math.floor(process.uptime());
 

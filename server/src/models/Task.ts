@@ -1,10 +1,20 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Schema, Model } from 'mongoose';
 
-/**
- * Task Schema
- * Defines the structure for task items in the practice MERN application
- */
-const taskSchema = new mongoose.Schema(
+export type TaskStatus = 'pending' | 'in-progress' | 'completed';
+export type TaskPriority = 'low' | 'medium' | 'high';
+
+export interface ITask extends Document {
+  title: string;
+  description?: string;
+  status: TaskStatus;
+  priority: TaskPriority;
+  category: string;
+  dueDate?: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const taskSchema = new Schema<ITask>(
   {
     title: {
       type: String,
@@ -46,8 +56,8 @@ const taskSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // Automatically manages createdAt and updatedAt
+    timestamps: true,
   }
 );
 
-export const Task = mongoose.model('Task', taskSchema);
+export const Task: Model<ITask> = mongoose.model<ITask>('Task', taskSchema);

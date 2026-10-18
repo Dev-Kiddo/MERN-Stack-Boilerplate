@@ -6,6 +6,7 @@ import { FilterBar } from './components/FilterBar';
 import { TaskCard } from './components/TaskCard';
 import { TaskModal } from './components/TaskModal';
 import { ApiGuideModal } from './components/ApiGuideModal';
+import { Task, TaskStats, HealthStatus, TaskFormData, TaskStatus } from './types/task';
 import { 
   AlertTriangle, 
   Sparkles, 
@@ -16,29 +17,34 @@ import {
   ExternalLink 
 } from 'lucide-react';
 
+interface ToastState {
+  message: string;
+  type: 'success' | 'error' | 'info';
+}
+
 export default function App() {
-  const [tasks, setTasks] = useState([]);
-  const [stats, setStats] = useState(null);
-  const [health, setHealth] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [seeding, setSeeding] = useState(false);
-  const [modalLoading, setModalLoading] = useState(false);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [stats, setStats] = useState<TaskStats | null>(null);
+  const [health, setHealth] = useState<HealthStatus | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [seeding, setSeeding] = useState<boolean>(false);
+  const [modalLoading, setModalLoading] = useState<boolean>(false);
   
   // Filters
-  const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('all');
-  const [priority, setPriority] = useState('all');
-  const [category, setCategory] = useState('all');
+  const [search, setSearch] = useState<string>('');
+  const [status, setStatus] = useState<string>('all');
+  const [priority, setPriority] = useState<string>('all');
+  const [category, setCategory] = useState<string>('all');
 
   // Modals
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState(null);
-  const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState<boolean>(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
 
   // Notifications / Toast
-  const [toast, setToast] = useState(null);
+  const [toast, setToast] = useState<ToastState | null>(null);
 
-  const showToast = (message, type = 'success') => {
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3500);
   };
@@ -68,7 +74,7 @@ export default function App() {
       if (res.success) {
         setTasks(res.data);
       }
-    } catch (err) {
+    } catch (err: any) {
       showToast(err.message || 'Error fetching tasks', 'error');
     } finally {
       setLoading(false);
@@ -102,11 +108,11 @@ export default function App() {
     try {
       const res = await api.seedTasks();
       if (res.success) {
-        showToast(res.message, 'success');
+        showToast(res.message || 'Sample tasks loaded', 'success');
         await fetchTasks();
         await fetchStats();
       }
-    } catch (err) {
+    } catch (err: any) {
       showToast(err.message || 'Failed to seed sample tasks', 'error');
     } finally {
       setSeeding(false);
@@ -114,7 +120,7 @@ export default function App() {
   };
 
   // Create or Update task
-  const handleSaveTask = async (taskData) => {
+  const handleSaveTask = async (taskData: TaskFormData) => {
     setModalLoading(true);
     try {
       if (editingTask) {
@@ -135,7 +141,7 @@ export default function App() {
           await fetchStats();
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       showToast(err.message || 'Failed to save task', 'error');
     } finally {
       setModalLoading(false);
@@ -143,9 +149,9 @@ export default function App() {
   };
 
   // Toggle status
-  const handleToggleStatus = async (task, newStatus) => {
+  const handleToggleStatus = async (task: Task, newStatus?: TaskStatus) => {
     try {
-      const targetStatus = newStatus || (task.status === 'completed' ? 'pending' : 'completed');
+      const targetStatus: TaskStatus = newStatus || (task.status === 'completed' ? 'pending' : 'completed');
       
       // Optimistic update
       setTasks((prev) =>
@@ -156,14 +162,14 @@ export default function App() {
       if (res.success) {
         fetchStats();
       }
-    } catch (err) {
+    } catch (err: any) {
       showToast(err.message || 'Failed to update status', 'error');
       fetchTasks();
     }
   };
 
   // Delete task
-  const handleDeleteTask = async (id) => {
+  const handleDeleteTask = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this task?')) return;
     try {
       // Optimistic UI update
@@ -173,18 +179,17 @@ export default function App() {
         showToast('Task deleted successfully', 'info');
         fetchStats();
       }
-    } catch (err) {
+    } catch (err: any) {
       showToast(err.message || 'Failed to delete task', 'error');
       fetchTasks();
     }
   };
 
   // Extract unique categories
-  const categories = Array.from(
+  const categories: string[] = Array.from(
     new Set(tasks.map((t) => t.category).filter(Boolean))
   );
 
-  const isServerOffline = health && health.status !== 'ok';
   const isDbOffline = health && (!health.database || !health.database.connected);
 
   return (
@@ -247,14 +252,14 @@ export default function App() {
             <div className="flex items-center gap-2 self-stretch md:self-auto">
               <button
                 onClick={() => setIsGuideOpen(true)}
-                className="flex-1 md:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 transition-colors whitespace-nowrap"
+                className="flex-1 md:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 transition-colors whitespace-nowrap cursor-pointer"
               >
                 <span>Setup Guide</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={handleRefresh}
-                className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-amber-400 hover:bg-amber-300 text-slate-950 transition-colors whitespace-nowrap font-bold"
+                className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-amber-400 hover:bg-amber-300 text-slate-950 transition-colors whitespace-nowrap font-bold cursor-pointer"
               >
                 Retry
               </button>
@@ -269,7 +274,7 @@ export default function App() {
               Full-Stack Practice Dashboard
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              Connected to Express REST API & MongoDB Mongoose. Create, read, update, and delete tasks in real time.
+              Connected to Express REST API & MongoDB Mongoose in TypeScript. Full type safety from database to browser.
             </p>
           </div>
 
@@ -279,7 +284,7 @@ export default function App() {
                 setEditingTask(null);
                 setIsTaskModalOpen(true);
               }}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-semibold text-xs sm:text-sm shadow-xl shadow-indigo-500/25 transition-all transform active:scale-95"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-semibold text-xs sm:text-sm shadow-xl shadow-indigo-500/25 transition-all transform active:scale-95 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Create New Task</span>
@@ -344,7 +349,7 @@ export default function App() {
                     setEditingTask(null);
                     setIsTaskModalOpen(true);
                   }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-md transition-all"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-md transition-all cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Create Task</span>
@@ -354,7 +359,7 @@ export default function App() {
                   <button
                     onClick={handleSeed}
                     disabled={seeding}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs transition-all"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs transition-all cursor-pointer"
                   >
                     <Sparkles className="w-4 h-4 text-amber-400" />
                     <span>Seed Demo Tasks</span>
@@ -385,19 +390,19 @@ export default function App() {
       {/* Footer */}
       <footer className="border-t border-slate-900 bg-slate-950/80 py-6 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p>© {new Date().getFullYear()} MERN Practice Workspace. Built for full-stack learning.</p>
+          <p>© {new Date().getFullYear()} MERN TypeScript Practice Workspace. Built for full-stack learning.</p>
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsGuideOpen(true)}
-              className="text-slate-400 hover:text-indigo-400 transition-colors flex items-center gap-1"
+              className="text-slate-400 hover:text-indigo-400 transition-colors flex items-center gap-1 cursor-pointer"
             >
               <Terminal className="w-3.5 h-3.5" />
               <span>API Endpoints</span>
             </button>
             <span className="text-slate-700">•</span>
-            <span>Node {process.version || 'v24'}</span>
+            <span>Node + Express TS</span>
             <span className="text-slate-700">•</span>
-            <span>React 19 + Tailwind v4</span>
+            <span>React 19 + Tailwind v4 TS</span>
           </div>
         </div>
       </footer>

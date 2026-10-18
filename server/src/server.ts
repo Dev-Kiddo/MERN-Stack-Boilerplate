@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
@@ -13,7 +13,7 @@ dotenv.config();
 // Connect to MongoDB
 connectDB();
 
-const app = express();
+const app: Application = express();
 const PORT = process.env.PORT || 5000;
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 
@@ -30,9 +30,9 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // API Routes
-app.get('/', (req, res) => {
+app.get('/', (_req: Request, res: Response) => {
   res.json({
-    message: '🚀 MERN Practice API Server is running!',
+    message: '🚀 MERN Practice API Server (TypeScript) is running!',
     endpoints: {
       health: '/api/health',
       tasks: '/api/tasks',
@@ -52,7 +52,7 @@ app.use(errorHandler);
 
 // Start Server
 app.listen(PORT, () => {
-  console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+  console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT} (TypeScript)`);
   console.log(`👉 API Health: http://localhost:${PORT}/api/health`);
   console.log(`👉 Tasks API: http://localhost:${PORT}/api/tasks`);
 });

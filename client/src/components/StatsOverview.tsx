@@ -1,7 +1,13 @@
 import React from 'react';
 import { CheckCircle2, Clock, AlertCircle, ListTodo } from 'lucide-react';
+import { TaskStats } from '../types/task';
 
-export const StatsOverview = ({ stats, tasksCount }) => {
+interface StatsOverviewProps {
+  stats: TaskStats | null;
+  tasksCount: number;
+}
+
+export const StatsOverview: React.FC<StatsOverviewProps> = ({ stats, tasksCount }) => {
   const total = stats?.total ?? tasksCount;
   const completed = stats?.completed ?? 0;
   const inProgress = stats?.inProgress ?? 0;

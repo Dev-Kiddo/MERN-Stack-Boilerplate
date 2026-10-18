@@ -1,14 +1,21 @@
 {
   "name": "mern-server",
   "version": "1.0.0",
-  "description": "Express and MongoDB backend for MERN practice starter",
-  "main": "src/server.js",
+  "description": "Express and MongoDB backend for MERN practice starter in TypeScript",
+  "main": "dist/server.js",
   "type": "module",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "node --watch src/server.js"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "tsx watch src/server.ts"
   },
-  "keywords": ["mern", "express", "mongodb", "nodejs"],
+  "keywords": [
+    "mern",
+    "express",
+    "mongodb",
+    "nodejs",
+    "typescript"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -17,5 +24,13 @@
     "express": "^4.21.2",
     "mongoose": "^8.9.5",
     "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.10.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
   }
 }

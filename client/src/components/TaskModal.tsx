@@ -1,8 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { X, Check } from 'lucide-react';
+import { Task, TaskFormData, TaskPriority, TaskStatus } from '../types/task';
 
-export const TaskModal = ({ isOpen, onClose, onSave, editingTask, loading }) => {
-  const [formData, setFormData] = useState({
+interface TaskModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (data: TaskFormData) => void;
+  editingTask: Task | null;
+  loading: boolean;
+}
+
+export const TaskModal: React.FC<TaskModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+  editingTask,
+  loading,
+}) => {
+  const [formData, setFormData] = useState<TaskFormData>({
     title: '',
     description: '',
     category: 'General',
@@ -10,7 +25,7 @@ export const TaskModal = ({ isOpen, onClose, onSave, editingTask, loading }) => 
     status: 'pending',
   });
 
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
     if (editingTask) {
@@ -35,7 +50,7 @@ export const TaskModal = ({ isOpen, onClose, onSave, editingTask, loading }) => 
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title.trim()) {
       setError('Title is required');
@@ -66,7 +81,7 @@ export const TaskModal = ({ isOpen, onClose, onSave, editingTask, loading }) => 
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -121,7 +136,7 @@ export const TaskModal = ({ isOpen, onClose, onSave, editingTask, loading }) => 
               </label>
               <select
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value as TaskStatus })}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
               >
                 <option value="pending">Pending</option>
@@ -137,14 +152,14 @@ export const TaskModal = ({ isOpen, onClose, onSave, editingTask, loading }) => 
               Priority
             </label>
             <div className="grid grid-cols-3 gap-2">
-              {['low', 'medium', 'high'].map((p) => {
+              {(['low', 'medium', 'high'] as TaskPriority[]).map((p) => {
                 const isSelected = formData.priority === p;
                 return (
                   <button
                     key={p}
                     type="button"
                     onClick={() => setFormData({ ...formData, priority: p })}
-                    className={`py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all ${
+                    className={`py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all cursor-pointer ${
                       isSelected
                         ? p === 'high'
                           ? 'bg-rose-500/20 text-rose-300 border-rose-500/50'
@@ -180,14 +195,14 @@ export const TaskModal = ({ isOpen, onClose, onSave, editingTask, loading }) => 
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-slate-800/60 hover:bg-slate-800 transition-colors"
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-slate-800/60 hover:bg-slate-800 transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-1.5 px-5 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white shadow-lg shadow-indigo-500/25 transition-all disabled:opacity-50"
+              className="flex items-center gap-1.5 px-5 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white shadow-lg shadow-indigo-500/25 transition-all disabled:opacity-50 cursor-pointer"
             >
               <Check className="w-4 h-4" />
               <span>{loading ? 'Saving...' : editingTask ? 'Update Task' : 'Create Task'}</span>

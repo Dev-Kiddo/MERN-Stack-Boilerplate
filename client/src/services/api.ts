@@ -1,18 +1,22 @@
-/**
- * API Service for MERN Practice Application
- * Communicates with the Express backend
- */
+import { Task, TaskStats, HealthStatus, ApiResponse, TaskFormData } from '../types/task';
 
 const API_BASE = '/api';
 
+export interface GetTasksParams {
+  search?: string;
+  status?: string;
+  priority?: string;
+  category?: string;
+}
+
 export const api = {
   // Check backend and database health
-  async checkHealth() {
+  async checkHealth(): Promise<HealthStatus> {
     try {
       const res = await fetch(`${API_BASE}/health`);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       return await res.json();
-    } catch (err) {
+    } catch (err: any) {
       return {
         status: 'error',
         error: err.message,
@@ -22,14 +26,14 @@ export const api = {
   },
 
   // Fetch all tasks with optional filters
-  async getTasks({ search = '', status = 'all', priority = 'all', category = 'all' } = {}) {
-    const params = new URLSearchParams();
-    if (search) params.append('search', search);
-    if (status && status !== 'all') params.append('status', status);
-    if (priority && priority !== 'all') params.append('priority', priority);
-    if (category && category !== 'all') params.append('category', category);
+  async getTasks(params: GetTasksParams = {}): Promise<ApiResponse<Task[]>> {
+    const searchParams = new URLSearchParams();
+    if (params.search) searchParams.append('search', params.search);
+    if (params.status && params.status !== 'all') searchParams.append('status', params.status);
+    if (params.priority && params.priority !== 'all') searchParams.append('priority', params.priority);
+    if (params.category && params.category !== 'all') searchParams.append('category', params.category);
 
-    const query = params.toString() ? `?${params.toString()}` : '';
+    const query = searchParams.toString() ? `?${searchParams.toString()}` : '';
     const res = await fetch(`${API_BASE}/tasks${query}`);
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Failed to fetch tasks');
@@ -37,7 +41,7 @@ export const api = {
   },
 
   // Get task statistics
-  async getStats() {
+  async getStats(): Promise<ApiResponse<TaskStats>> {
     const res = await fetch(`${API_BASE}/tasks/stats`);
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Failed to fetch statistics');
@@ -45,7 +49,7 @@ export const api = {
   },
 
   // Create a new task
-  async createTask(taskData) {
+  async createTask(taskData: TaskFormData): Promise<ApiResponse<Task>> {
     const res = await fetch(`${API_BASE}/tasks`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -57,7 +61,7 @@ export const api = {
   },
 
   // Update a task by ID
-  async updateTask(id, taskData) {
+  async updateTask(id: string, taskData: Partial<Task>): Promise<ApiResponse<Task>> {
     const res = await fetch(`${API_BASE}/tasks/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -69,7 +73,7 @@ export const api = {
   },
 
   // Delete a task by ID
-  async deleteTask(id) {
+  async deleteTask(id: string): Promise<ApiResponse<{ id: string }>> {
     const res = await fetch(`${API_BASE}/tasks/${id}`, {
       method: 'DELETE',
     });
@@ -79,7 +83,7 @@ export const api = {
   },
 
   // Seed sample tasks
-  async seedTasks() {
+  async seedTasks(): Promise<ApiResponse<Task[]>> {
     const res = await fetch(`${API_BASE}/tasks/seed`, {
       method: 'POST',
     });

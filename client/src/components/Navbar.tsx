@@ -1,9 +1,24 @@
 import React from 'react';
 import { Server, Database, Sparkles, BookOpen, RefreshCw } from 'lucide-react';
+import { HealthStatus } from '../types/task';
 
-export const Navbar = ({ health, onRefresh, onSeed, onOpenGuide, seeding }) => {
+interface NavbarProps {
+  health: HealthStatus | null;
+  onRefresh: () => void;
+  onSeed: () => void;
+  onOpenGuide: () => void;
+  seeding: boolean;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({
+  health,
+  onRefresh,
+  onSeed,
+  onOpenGuide,
+  seeding,
+}) => {
   const isServerUp = health?.status === 'ok';
-  const isDbUp = health?.database?.connected;
+  const isDbUp = Boolean(health?.database?.connected);
 
   return (
     <header className="sticky top-0 z-40 w-full backdrop-blur-xl bg-slate-950/80 border-b border-slate-800/80 shadow-2xl">
@@ -14,7 +29,7 @@ export const Navbar = ({ health, onRefresh, onSeed, onOpenGuide, seeding }) => {
           <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-cyan-400 p-[1px] shadow-lg shadow-indigo-500/20">
             <div className="w-full h-full bg-slate-950 rounded-[11px] flex items-center justify-center">
               <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 text-lg">
-                M
+                TS
               </span>
             </div>
           </div>
@@ -24,11 +39,11 @@ export const Navbar = ({ health, onRefresh, onSeed, onOpenGuide, seeding }) => {
                 MERN Practice Lab
               </h1>
               <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                v1.0
+                TypeScript
               </span>
             </div>
             <p className="text-xs text-slate-400 hidden sm:block">
-              MongoDB • Express • React • Node.js + Tailwind
+              MongoDB • Express • React • Node.js + Tailwind (Typed)
             </p>
           </div>
         </div>
@@ -37,7 +52,7 @@ export const Navbar = ({ health, onRefresh, onSeed, onOpenGuide, seeding }) => {
         <div className="flex items-center gap-2 sm:gap-4">
           {/* Server Badge */}
           <div
-            title={isServerUp ? 'Express backend is online' : 'Express backend is offline. Run: npm run server'}
+            title={isServerUp ? 'Express backend is online' : 'Express backend is offline. Run: npm run dev:server'}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
               isServerUp
                 ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
@@ -46,7 +61,8 @@ export const Navbar = ({ health, onRefresh, onSeed, onOpenGuide, seeding }) => {
           >
             <Server className="w-3.5 h-3.5" />
             <span className="hidden md:inline">Server:</span>
-            <span className="inline-block w-2 h-2 rounded-full animate-pulse"
+            <span
+              className="inline-block w-2 h-2 rounded-full animate-pulse"
               style={{ backgroundColor: isServerUp ? '#10b981' : '#f43f5e' }}
             />
             <span className="capitalize">{isServerUp ? 'Active' : 'Offline'}</span>
@@ -67,7 +83,8 @@ export const Navbar = ({ health, onRefresh, onSeed, onOpenGuide, seeding }) => {
           >
             <Database className="w-3.5 h-3.5" />
             <span className="hidden md:inline">MongoDB:</span>
-            <span className="inline-block w-2 h-2 rounded-full animate-pulse"
+            <span
+              className="inline-block w-2 h-2 rounded-full animate-pulse"
               style={{ backgroundColor: isDbUp ? '#14b8a6' : '#f59e0b' }}
             />
             <span className="capitalize">{isDbUp ? 'Connected' : 'Disconnected'}</span>

@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import { X, Copy, Check, Terminal, Code2, Database, Rocket, Lightbulb } from 'lucide-react';
 
-export const ApiGuideModal = ({ isOpen, onClose }) => {
-  const [copiedIndex, setCopiedIndex] = useState(null);
+interface ApiGuideModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const ApiGuideModal: React.FC<ApiGuideModalProps> = ({ isOpen, onClose }) => {
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   if (!isOpen) return null;
 
-  const handleCopy = (text, index) => {
+  const handleCopy = (text: string, index: number) => {
     navigator.clipboard.writeText(text);
     setCopiedIndex(index);
     setTimeout(() => setCopiedIndex(null), 2000);
@@ -80,7 +85,7 @@ export const ApiGuideModal = ({ isOpen, onClose }) => {
     },
   ];
 
-  const methodColors = {
+  const methodColors: Record<string, string> = {
     GET: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
     POST: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30',
     PUT: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
@@ -99,7 +104,7 @@ export const ApiGuideModal = ({ isOpen, onClose }) => {
             </div>
             <div>
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                MERN Practice Guide & API Documentation
+                MERN Practice Guide & API Documentation (TypeScript)
               </h2>
               <p className="text-xs text-slate-400">
                 Architecture overview, REST endpoints, and hands-on skill-building challenges
@@ -108,7 +113,7 @@ export const ApiGuideModal = ({ isOpen, onClose }) => {
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-800 transition-colors"
+            className="p-2 rounded-xl text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -121,24 +126,24 @@ export const ApiGuideModal = ({ isOpen, onClose }) => {
           <div>
             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2 mb-3">
               <Code2 className="w-4 h-4 text-cyan-400" />
-              1. Full-Stack Data Flow
+              1. Full-Stack Data Flow (TypeScript)
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-center">
               <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
-                <span className="text-xs font-bold text-cyan-400">1. React + Vite</span>
-                <p className="text-[11px] text-slate-400 mt-1">UI & state triggers API fetch() calls via proxy</p>
+                <span className="text-xs font-bold text-cyan-400">1. React 19 + TS</span>
+                <p className="text-[11px] text-slate-400 mt-1">Typed React components call api.ts via Vite proxy</p>
               </div>
               <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
-                <span className="text-xs font-bold text-indigo-400">2. Express Routes</span>
-                <p className="text-[11px] text-slate-400 mt-1">HTTP request arrives at /api/tasks & middleware</p>
+                <span className="text-xs font-bold text-indigo-400">2. Express TS Router</span>
+                <p className="text-[11px] text-slate-400 mt-1">Typed Express handlers at /api/tasks & middleware</p>
               </div>
               <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
-                <span className="text-xs font-bold text-purple-400">3. Controllers & Logic</span>
-                <p className="text-[11px] text-slate-400 mt-1">Validates payload and queries Mongoose model</p>
+                <span className="text-xs font-bold text-purple-400">3. Typed Controller</span>
+                <p className="text-[11px] text-slate-400 mt-1">Validates payload against ITask interface</p>
               </div>
               <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
                 <span className="text-xs font-bold text-emerald-400">4. MongoDB Engine</span>
-                <p className="text-[11px] text-slate-400 mt-1">Stores BSON documents and returns results</p>
+                <p className="text-[11px] text-slate-400 mt-1">Mongoose persists BSON documents & returns typed data</p>
               </div>
             </div>
           </div>
@@ -174,7 +179,7 @@ export const ApiGuideModal = ({ isOpen, onClose }) => {
                   <div className="flex items-center gap-2 self-start md:self-center">
                     <button
                       onClick={() => handleCopy(ep.curl, i)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition-colors cursor-pointer"
                     >
                       {copiedIndex === i ? (
                         <>
@@ -245,7 +250,7 @@ export const ApiGuideModal = ({ isOpen, onClose }) => {
         <div className="p-4 border-t border-slate-800 bg-slate-950/60 flex justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-md"
+            className="px-5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-md cursor-pointer"
           >
             Got it, Let's Code!
           </button>

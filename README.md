@@ -1,54 +1,59 @@
-# ⚡ MERN Stack Practice Starter Codebase
+# ⚡ MERN Stack Practice Starter Codebase (TypeScript)
 
-A clean, modular, and modern **MERN (MongoDB, Express, React, Node.js)** starter codebase crafted specifically for practicing full-stack development.
+A clean, modular, and type-safe **MERN (MongoDB, Express, React, Node.js)** starter codebase crafted specifically for practicing full-stack development with **TypeScript**.
 
-Featuring an **Express REST API** with **Mongoose** modeling, and a fast **React (Vite)** frontend styled with **Tailwind CSS v4** and modern glassmorphic aesthetics.
+Featuring an **Express REST API** with **TypeScript + Mongoose** modeling, and a fast **React 19 + TypeScript (Vite)** frontend styled with **Tailwind CSS v4** and modern glassmorphic aesthetics.
 
 ---
 
 ## 📁 Project Architecture
 
 ```
-Basic MERN Code/
-├── package.json                 # Root script runner (runs client & server together)
+MERN Stack Boilerplate/
+├── package.json                 # Root script runner (runs TS client & server concurrently)
 ├── .gitignore
 ├── README.md
 │
-├── server/                      # 🚀 Node.js + Express + MongoDB Backend
+├── server/                      # 🚀 Node.js + Express + MongoDB Backend (TypeScript)
 │   ├── package.json
+│   ├── tsconfig.json            # NodeNext ES2022 TypeScript configuration
 │   ├── .env                     # Server environment variables (port, db URI)
 │   ├── .env.example
 │   └── src/
 │       ├── config/
-│       │   └── db.js            # Mongoose connection & status checker
+│       │   └── db.ts            # Mongoose connection & typed status helper
 │       ├── controllers/
-│       │   └── taskController.js # Full CRUD logic, stats, & seed helper
+│       │   └── taskController.ts # Typed CRUD logic, stats, & seed helper
 │       ├── middleware/
-│       │   └── errorHandler.js   # 404 & global error handling
+│       │   └── errorHandler.ts  # Typed 404 & global error handling
 │       ├── models/
-│       │   └── Task.js          # Mongoose Task Schema & validation
+│       │   └── Task.ts          # ITask interface & Mongoose Schema
 │       ├── routes/
-│       │   ├── healthRoutes.js  # /api/health endpoint
-│       │   └── taskRoutes.js    # /api/tasks endpoints
-│       └── server.js            # Express app entry point
+│       │   ├── healthRoutes.ts  # /api/health endpoint
+│       │   └── taskRoutes.ts    # /api/tasks endpoints
+│       └── server.ts            # Express app entry point
 │
-└── client/                      # ⚛️ React 19 + Vite + Tailwind CSS v4 Frontend
+└── client/                      # ⚛️ React 19 + Vite + Tailwind CSS v4 Frontend (TypeScript)
     ├── package.json
-    ├── vite.config.js           # Vite config with @tailwindcss/vite & API proxy
+    ├── tsconfig.json            # Vite React TypeScript configuration
+    ├── vite.config.ts           # Configured with @tailwindcss/vite & API proxy
     ├── index.html               # Custom fonts & SEO meta tags
     └── src/
+        ├── types/
+        │   └── task.ts          # Centralized TypeScript interfaces (Task, Stats, Health)
         ├── components/
-        │   ├── Navbar.jsx       # Real-time backend & MongoDB status indicators
-        │   ├── StatsOverview.jsx# Metric cards & completion progress bar
-        │   ├── FilterBar.jsx    # Search, category, priority, & status filters
-        │   ├── TaskCard.jsx     # Interactive cards with quick-toggle & actions
-        │   ├── TaskModal.jsx    # Create & edit task modal
-        │   └── ApiGuideModal.jsx# In-app API reference & practice roadmap
+        │   ├── Navbar.tsx       # Real-time backend & MongoDB status indicators
+        │   ├── StatsOverview.tsx# Metric cards & completion progress bar
+        │   ├── FilterBar.tsx    # Search, category, priority, & status filters
+        │   ├── TaskCard.tsx     # Interactive cards with quick-toggle & actions
+        │   ├── TaskModal.tsx    # Typed create & edit task modal
+        │   └── ApiGuideModal.tsx# In-app API reference & practice roadmap
         ├── services/
-        │   └── api.js           # API communication layer
-        ├── App.jsx              # Main dashboard application
-        ├── index.css            # Tailwind CSS v4 configuration
-        └── main.jsx             # React DOM root
+        │   └── api.ts           # Typed API communication layer
+        ├── App.tsx              # Main dashboard application
+        ├── index.css            # Tailwind CSS v4 styles & custom scrollbars
+        ├── main.tsx             # React DOM root
+        └── vite-env.d.ts        # Vite client types
 ```
 
 ---
@@ -73,14 +78,22 @@ By default, the server connects to a local MongoDB instance:
      ```
 
 ### 3. Run the Full Stack
-Start both Express and React with one command from the project root:
+Start both Express (TypeScript via `tsx watch`) and React (TypeScript via Vite) with one command from the project root:
 ```bash
 npm run dev
 ```
 
 Or run them individually in separate terminals:
-- **Backend Only**: `npm run dev:server` (runs on `http://localhost:5000`)
-- **Frontend Only**: `npm run dev:client` (runs on `http://localhost:5173`)
+- **Backend Only (TS)**: `npm run dev:server` (runs on `http://localhost:5000`)
+- **Frontend Only (TS)**: `npm run dev:client` (runs on `http://localhost:5173`)
+
+### 4. Build for Production
+To typecheck and compile both backend and frontend:
+```bash
+npm run build
+```
+- Server outputs compiled JS to `server/dist/`
+- Client outputs production bundle to `client/dist/`
 
 ---
 
@@ -99,21 +112,21 @@ Or run them individually in separate terminals:
 
 ---
 
-## 🎯 6 Practice Challenges to Master Full-Stack Skills
+## 🎯 6 TypeScript Practice Challenges to Master Full-Stack Skills
 
-Use this foundation to practice and level up:
+Use this typed foundation to practice and level up:
 
 1. **Add a Due Date Picker & Overdue Alert**:
-   - Add a date picker to [`TaskModal.jsx`](file:///d:/Development/Playground/Basic%20MERN%20Code/client/src/components/TaskModal.jsx).
-   - Display an overdue badge on [`TaskCard.jsx`](file:///d:/Development/Playground/Basic%20MERN%20Code/client/src/components/TaskCard.jsx) when `dueDate < Date.now()` and status is not completed.
+   - Add a date input to [`TaskModal.tsx`](file:///d:/Development/Playground/Basic%20MERN%20Code/client/src/components/TaskModal.tsx).
+   - Display an overdue badge on [`TaskCard.tsx`](file:///d:/Development/Playground/Basic%20MERN%20Code/client/src/components/TaskCard.tsx) when `dueDate < Date.now()` and status is not completed.
 
-2. **Implement User Authentication (JWT)**:
-   - Create a `User` model (`name`, `email`, `passwordHash`) in `server/src/models/User.js`.
+2. **Implement User Authentication (JWT + TypeScript)**:
+   - Create a typed `User` model (`IUser` interface) in `server/src/models/User.ts`.
    - Add register & login routes with `bcrypt` and `jsonwebtoken`.
-   - Protect task routes so users only see their own tasks.
+   - Create typed Express request middleware to attach `req.user`.
 
 3. **Backend Pagination**:
-   - Update `getTasks` in [`taskController.js`](file:///d:/Development/Playground/Basic%20MERN%20Code/server/src/controllers/taskController.js) to support `?page=1&limit=6` using Mongoose `.skip()` and `.limit()`.
+   - Update `getTasks` in [`taskController.ts`](file:///d:/Development/Playground/Basic%20MERN%20Code/server/src/controllers/taskController.ts) to support `?page=1&limit=6` using Mongoose `.skip()` and `.limit()`.
    - Add page navigation buttons in React.
 
 4. **Kanban Board View**:
@@ -121,8 +134,8 @@ Use this foundation to practice and level up:
    - Allow drag-and-drop or column buttons to change task states.
 
 5. **Tags & Multi-Filter**:
-   - Allow adding multiple tags (e.g. `['bug', 'v1', 'ui']`) to a task.
-   - Filter by clicking tags.
+   - Update `ITask` interface and schema to include `tags: string[]`.
+   - Filter by clicking tags in React.
 
 6. **Automated Unit & Integration Tests**:
    - Add tests using Vitest on the frontend and Jest / Supertest on the Express API.

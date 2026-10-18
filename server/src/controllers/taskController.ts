@@ -1,30 +1,42 @@
+import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
-import { Task } from '../models/Task.js';
+import { Task, ITask } from '../models/Task.js';
 
-// Helper to check if MongoDB is ready
-const checkDBReady = () => {
+const checkDBReady = (): boolean => {
   return mongoose.connection.readyState === 1;
 };
+
+interface GetTasksQuery {
+  search?: string;
+  status?: string;
+  priority?: string;
+  category?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
 
 /**
  * @desc    Get all tasks with optional search, status, and priority filters
  * @route   GET /api/tasks
  */
-export const getTasks = async (req, res, next) => {
+export const getTasks = async (
+  req: Request<{}, {}, {}, GetTasksQuery>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     if (!checkDBReady()) {
-      return res.status(503).json({
+      res.status(503).json({
         success: false,
         message: 'MongoDB is currently disconnected. Please verify your connection string in server/.env or start MongoDB.',
         data: [],
       });
+      return;
     }
 
     const { search, status, priority, category, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
+    const query: mongoose.FilterQuery<ITask> = {};
 
-    const query = {};
-
-    // Search filter
     if (search) {
       query.$or = [
         { title: { $regex: search, $options: 'i' } },
@@ -32,22 +44,19 @@ export const getTasks = async (req, res, next) => {
       ];
     }
 
-    // Status filter
     if (status && status !== 'all') {
-      query.status = status;
+      query.status = status as any;
     }
 
-    // Priority filter
     if (priority && priority !== 'all') {
-      query.priority = priority;
+      query.priority = priority as any;
     }
 
-    // Category filter
     if (category && category !== 'all') {
       query.category = category;
     }
 
-    const sortOptions = {};
+    const sortOptions: Record<string, 1 | -1> = {};
     sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
 
     const tasks = await Task.find(query).sort(sortOptions);
@@ -66,22 +75,28 @@ export const getTasks = async (req, res, next) => {
  * @desc    Get single task by ID
  * @route   GET /api/tasks/:id
  */
-export const getTaskById = async (req, res, next) => {
+export const getTaskById = async (
+  req: Request<{ id: string }>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     if (!checkDBReady()) {
-      return res.status(503).json({
+      res.status(503).json({
         success: false,
         message: 'MongoDB is currently disconnected.',
       });
+      return;
     }
 
     const task = await Task.findById(req.params.id);
 
     if (!task) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: `Task with id ${req.params.id} not found`,
       });
+      return;
     }
 
     res.status(200).json({
@@ -97,13 +112,18 @@ export const getTaskById = async (req, res, next) => {
  * @desc    Create a new task
  * @route   POST /api/tasks
  */
-export const createTask = async (req, res, next) => {
+export const createTask = async (
+  req: Request<{}, {}, Partial<ITask>>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     if (!checkDBReady()) {
-      return res.status(503).json({
+      res.status(503).json({
         success: false,
         message: 'MongoDB is currently disconnected. Cannot save task.',
       });
+      return;
     }
 
     const { title, description, status, priority, category, dueDate } = req.body;
@@ -131,13 +151,18 @@ export const createTask = async (req, res, next) => {
  * @desc    Update a task by ID
  * @route   PUT /api/tasks/:id
  */
-export const updateTask = async (req, res, next) => {
+export const updateTask = async (
+  req: Request<{ id: string }, {}, Partial<ITask>>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     if (!checkDBReady()) {
-      return res.status(503).json({
+      res.status(503).json({
         success: false,
         message: 'MongoDB is currently disconnected.',
       });
+      return;
     }
 
     const task = await Task.findByIdAndUpdate(
@@ -147,10 +172,11 @@ export const updateTask = async (req, res, next) => {
     );
 
     if (!task) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: `Task with id ${req.params.id} not found`,
       });
+      return;
     }
 
     res.status(200).json({
@@ -167,22 +193,28 @@ export const updateTask = async (req, res, next) => {
  * @desc    Delete a task by ID
  * @route   DELETE /api/tasks/:id
  */
-export const deleteTask = async (req, res, next) => {
+export const deleteTask = async (
+  req: Request<{ id: string }>,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     if (!checkDBReady()) {
-      return res.status(503).json({
+      res.status(503).json({
         success: false,
         message: 'MongoDB is currently disconnected.',
       });
+      return;
     }
 
     const task = await Task.findByIdAndDelete(req.params.id);
 
     if (!task) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: `Task with id ${req.params.id} not found`,
       });
+      return;
     }
 
     res.status(200).json({
@@ -199,10 +231,14 @@ export const deleteTask = async (req, res, next) => {
  * @desc    Get task statistics for dashboard summary
  * @route   GET /api/tasks/stats
  */
-export const getTaskStats = async (req, res, next) => {
+export const getTaskStats = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     if (!checkDBReady()) {
-      return res.status(200).json({
+      res.status(200).json({
         success: true,
         data: {
           total: 0,
@@ -212,6 +248,7 @@ export const getTaskStats = async (req, res, next) => {
           dbConnected: false,
         },
       });
+      return;
     }
 
     const total = await Task.countDocuments();
@@ -238,42 +275,47 @@ export const getTaskStats = async (req, res, next) => {
  * @desc    Seed sample tasks for initial practice
  * @route   POST /api/tasks/seed
  */
-export const seedTasks = async (req, res, next) => {
+export const seedTasks = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     if (!checkDBReady()) {
-      return res.status(503).json({
+      res.status(503).json({
         success: false,
         message: 'MongoDB is currently disconnected. Cannot seed data.',
       });
+      return;
     }
 
     const sampleTasks = [
       {
         title: 'Set up local MongoDB or Atlas cluster',
         description: 'Verify your MongoDB connection string in the server/.env file.',
-        status: 'completed',
-        priority: 'high',
+        status: 'completed' as const,
+        priority: 'high' as const,
         category: 'DevOps',
       },
       {
         title: 'Explore Express REST API Endpoints',
         description: 'Test the GET, POST, PUT, DELETE routes using Postman, Thunder Client, or the frontend UI.',
-        status: 'in-progress',
-        priority: 'medium',
+        status: 'in-progress' as const,
+        priority: 'medium' as const,
         category: 'Backend',
       },
       {
         title: 'Customize Tailwind CSS v4 styling',
         description: 'Experiment with Tailwind utility classes and responsive layouts in client/src/components.',
-        status: 'pending',
-        priority: 'low',
+        status: 'pending' as const,
+        priority: 'low' as const,
         category: 'Frontend',
       },
       {
         title: 'Practice adding a new MERN feature',
         description: 'Try adding user authentication, tags, or file uploads to expand your full-stack skills.',
-        status: 'pending',
-        priority: 'high',
+        status: 'pending' as const,
+        priority: 'high' as const,
         category: 'FullStack',
       },
     ];

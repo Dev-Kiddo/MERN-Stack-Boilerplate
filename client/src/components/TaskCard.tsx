@@ -1,19 +1,32 @@
 import React from 'react';
 import { CheckCircle2, Circle, Clock, Trash2, Edit3, Tag, Calendar } from 'lucide-react';
+import { Task, TaskPriority, TaskStatus } from '../types/task';
 
-export const TaskCard = ({ task, onToggleStatus, onEdit, onDelete }) => {
+interface TaskCardProps {
+  task: Task;
+  onToggleStatus: (task: Task, newStatus?: TaskStatus) => void;
+  onEdit: (task: Task) => void;
+  onDelete: (id: string) => void;
+}
+
+export const TaskCard: React.FC<TaskCardProps> = ({
+  task,
+  onToggleStatus,
+  onEdit,
+  onDelete,
+}) => {
   const isCompleted = task.status === 'completed';
   const isInProgress = task.status === 'in-progress';
 
   // Priority Styling
-  const priorityStyles = {
+  const priorityStyles: Record<TaskPriority, string> = {
     high: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
     medium: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
     low: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
   };
 
   // Status Styling
-  const statusStyles = {
+  const statusStyles: Record<TaskStatus, string> = {
     'completed': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
     'in-progress': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
     'pending': 'bg-slate-800/80 text-slate-400 border-slate-700/50',
@@ -38,7 +51,7 @@ export const TaskCard = ({ task, onToggleStatus, onEdit, onDelete }) => {
         {/* Toggle Complete Checkbox */}
         <button
           onClick={() => onToggleStatus(task)}
-          className="mt-0.5 text-slate-500 hover:text-emerald-400 transition-colors flex-shrink-0"
+          className="mt-0.5 text-slate-500 hover:text-emerald-400 transition-colors flex-shrink-0 cursor-pointer"
           title={isCompleted ? 'Mark as pending' : 'Mark as completed'}
         >
           {isCompleted ? (
@@ -102,7 +115,7 @@ export const TaskCard = ({ task, onToggleStatus, onEdit, onDelete }) => {
             {/* Status Dropdown */}
             <select
               value={task.status}
-              onChange={(e) => onToggleStatus(task, e.target.value)}
+              onChange={(e) => onToggleStatus(task, e.target.value as TaskStatus)}
               className={`text-xs px-2.5 py-1 rounded-lg border font-medium bg-slate-950 focus:outline-none cursor-pointer ${
                 statusStyles[task.status] || statusStyles.pending
               }`}

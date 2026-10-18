@@ -1,7 +1,20 @@
 import React from 'react';
-import { Search, Plus, SlidersHorizontal, X } from 'lucide-react';
+import { Search, Plus, X } from 'lucide-react';
 
-export const FilterBar = ({
+interface FilterBarProps {
+  search: string;
+  setSearch: (value: string) => void;
+  status: string;
+  setStatus: (value: string) => void;
+  priority: string;
+  setPriority: (value: string) => void;
+  category: string;
+  setCategory: (value: string) => void;
+  categories: string[];
+  onOpenCreateModal: () => void;
+}
+
+export const FilterBar: React.FC<FilterBarProps> = ({
   search,
   setSearch,
   status,
