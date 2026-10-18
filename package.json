@@ -1,0 +1,26 @@
+{
+  "name": "mern-practice-codebase",
+  "version": "1.0.0",
+  "description": "Full-stack MERN practice codebase with Node.js, Express, MongoDB, and React with Tailwind CSS v4",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "start": "node server/src/server.js",
+    "install:all": "npm install && npm install --prefix server && npm install --prefix client"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "keywords": [
+    "mern",
+    "react",
+    "express",
+    "mongodb",
+    "nodejs",
+    "tailwind",
+    "fullstack"
+  ],
+  "author": "",
+  "license": "MIT"
+}
